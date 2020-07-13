@@ -66,6 +66,7 @@
         "utility": "cpp",
         "vector": "cpp",
         "*.tcc": "cpp",
-        "cinttypes": "cpp"
+        "cinttypes": "cpp",
+        "*.old": "cpp"
     }
 }

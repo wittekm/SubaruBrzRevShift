@@ -6,8 +6,8 @@
 
 // System-wide objects
 Deps deps;
-KeyboardFace kf(deps);
 IScene * currScene = NULL;
+EventQueue eq;
 
 // the setup routine runs once when M5Stack starts up
 void setup(){
@@ -26,6 +26,7 @@ void setup(){
     
   // LCD display
   M5.Lcd.println("A for off, B for OBD, C for OBD setup");
+  kbSetup();
 }
 
 
@@ -36,7 +37,11 @@ bool bPressed = false;
 // the loop routine runs over and over again forever
 void loop() {
 
-  kf.loop();
+  kbLoop(eq);
+
+  if(Event evt = eq.get(); !evt.isEmpty()) {
+    deps.lcd.println("We got a live one");
+  }
   
   // shutdown
   if(M5.BtnA.wasPressed()) {
@@ -64,5 +69,5 @@ void loop() {
     currScene->loop();
   }
   M5.update();
-  deps.sleep(200);
+  deps.sleep(100);
 }
