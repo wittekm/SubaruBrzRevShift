@@ -37,3 +37,19 @@ void kbLoop(EventQueue& eq)
         }
     }
 }
+
+void btnLoop(EventQueue& eq)
+{
+    char whichBtn = 255;
+    if(M5.BtnA.wasPressed()) {
+        whichBtn = 'a';
+    } else if(M5.BtnB.wasPressed()) {
+        whichBtn = 'b';
+    } else if (M5.BtnC.wasPressed()) {
+        whichBtn = 'c';
+    }
+    if (whichBtn != 255) {
+        Event event(EventType::BTN, whichBtn);
+        eq.add(event);
+    }
+}

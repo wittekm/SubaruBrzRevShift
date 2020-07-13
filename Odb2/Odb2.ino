@@ -3,15 +3,26 @@
 #include "faces.hpp"
 #include "odb2_renderer.hpp"
 #include "test_obd_data_provider.hpp"
+#include "elm_obd_data_provider.hpp"
+
+
+struct State
+{
+  IScene *currScene = NULL;
+  bool shouldSceneLoop = false;
+  IObdDataProvider *dataProvider;
+};
+void handleButtonEvent(const Event event, State &state);
+void handleKbEvent(const Event event, State &state);
 
 // System-wide objects
 Deps deps;
-IScene * currScene = NULL;
 EventQueue eq;
+State state;
 
 // the setup routine runs once when M5Stack starts up
-void setup(){
-
+void setup()
+{
   // Initialize the M5Stack object
   M5.begin();
 
@@ -23,51 +34,96 @@ void setup(){
   M5.Power.begin();
 
   M5.Lcd.setTextSize(2);
-    
+
   // LCD display
   M5.Lcd.println("A for off, B for OBD, C for OBD setup");
+  M5.Lcd.println("T for test I for IRL");
   kbSetup();
+  state.dataProvider = new TestObdDataProvider(deps);
 }
 
 
-IObdDataProvider * dataProvider = new TestObdDataProvider(deps);
-
-bool bPressed = false;
 
 // the loop routine runs over and over again forever
-void loop() {
+void loop()
+{
 
+  // Read inputs, add them as Events
   kbLoop(eq);
+  btnLoop(eq);
 
-  if(Event evt = eq.get(); !evt.isEmpty()) {
-    deps.lcd.println("We got a live one");
+  // Dispatch state-changing events
+  Event evt = eq.get();
+  if (!evt.isEmpty())
+  {
+    //deps.lcd.println("We got a live one");
+    handleEvent(evt, state);
   }
-  
-  // shutdown
-  if(M5.BtnA.wasPressed()) {
+
+  // turn on currScene->loop
+  if (state.shouldSceneLoop && state.currScene)
+    {
+      state.currScene->loop();
+    }
+
+  M5.update();
+  deps.sleep(100);
+}
+
+void handleEvent(const Event event, State &state)
+{
+  if (event.type == EventType::BTN)
+  {
+    handleButtonEvent(event, state);
+  }
+  else if (event.type == EventType::KB)
+  {
+    handleKbEvent(event, state);
+  }
+}
+
+void handleKbEvent(const Event event, State &state)
+{
+  if (event.payload == 't')
+  {
+  }
+  switch (event.payload)
+  {
+  case 't':
+    deps.lcd.println("Test");
+    state.dataProvider = new TestObdDataProvider(deps);
+    break;
+
+  case 'i':
+    deps.lcd.println("IRL");
+    state.dataProvider = new ElmObdDataProvider(deps);
+    break;
+
+  default:
+    break;
+  }
+}
+
+void handleButtonEvent(const Event event, State &state)
+{
+  if (event.payload == 'a')
+  {
     M5.Lcd.println("ok buhbye");
     delay(1000);
     M5.powerOFF();
   }
 
-  // turn on currScene->loop
-  if(M5.BtnB.wasPressed()) {
-    bPressed = true;
+  if (event.payload == 'b')
+  {
+    state.shouldSceneLoop = true;
   }
 
-  // setup
-  if(M5.BtnC.wasPressed()) {
+  if (event.payload == 'c')
+  {
     M5.Lcd.println("setting up obd...");
     // TODO real data provider instead of fake
-    currScene = new ODB2IrlScene(
-      dataProvider, deps
-    );
-    currScene->setup();
+    state.currScene = new ODB2IrlScene(
+        state.dataProvider, deps);
+    state.currScene->setup();
   }
-  
-  if(bPressed) {
-    currScene->loop();
-  }
-  M5.update();
-  deps.sleep(100);
 }

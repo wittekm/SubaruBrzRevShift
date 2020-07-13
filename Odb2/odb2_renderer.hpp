@@ -49,6 +49,8 @@ public:
 
         if (rpm != 0)
         {
+            //deps.lcd.cleaIr(BLACK);
+            deps.lcd.fillScreen(BLACK);
             deps.lcd.setCursor(0, 0);
             deps.lcd.print("RPM: ");
             deps.lcd.println(rpm);

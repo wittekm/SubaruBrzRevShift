@@ -15,7 +15,8 @@ struct Event {
 };
 
 enum EventType {
-    KB = 1
+    KB = 1,
+    BTN = 2,
 };
 
 class EventQueue {
