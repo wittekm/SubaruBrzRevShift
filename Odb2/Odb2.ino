@@ -1,3 +1,5 @@
+#define ESP32
+#include <ELMduino.h>
 #include <M5Stack.h>
 #include "deps.hpp"
 #include "faces.hpp"
@@ -32,11 +34,15 @@ void setup()
     If used battery, please call this function in your project
   */
   M5.Power.begin();
+  // get rid of annoying sound
+  ledcDetachPin(SPEAKER_PIN);
+  pinMode(SPEAKER_PIN, INPUT);
 
-  M5.Lcd.setTextSize(2);
+  M5.Lcd.setTextSize(4);
+  M5.Lcd.setTextColor(YELLOW, BLACK);
 
   // LCD display
-  M5.Lcd.println("A for off, B for OBD, C for OBD setup");
+  M5.Lcd.println("A for off\nB for OBD\nC for OBD setup");
   M5.Lcd.println("T for test I for IRL");
   kbSetup();
   state.dataProvider = new TestObdDataProvider(deps);
@@ -47,6 +53,7 @@ void setup()
 // the loop routine runs over and over again forever
 void loop()
 {
+  const int loopStartMillis = deps.curTimeMillis();
 
   // Read inputs, add them as Events
   kbLoop(eq);
@@ -66,8 +73,20 @@ void loop()
       state.currScene->loop();
     }
 
-  M5.update();
-  deps.sleep(100);
+  M5.update(); // read buttons
+  framerateWait(deps, loopStartMillis);
+}
+
+static int DESIRED_FPS = 30;
+static int TIME_BETWEEN_FRAMES = 1000 / DESIRED_FPS;
+
+void framerateWait(Deps& deps, int loopStartMillis) {
+  int msForLoop = deps.curTimeMillis() - loopStartMillis;
+  //assert msForLoop >= 0;
+  int timeToWait = TIME_BETWEEN_FRAMES - msForLoop;
+  if (timeToWait > 0) {
+    deps.sleep(timeToWait);
+  }
 }
 
 void handleEvent(const Event event, State &state)

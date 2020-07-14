@@ -11,6 +11,11 @@ public:
 TestObdDataProvider(Deps &deps) : deps(deps) {}
     int getRpm()
     {
-        return (deps.curTimeMillis() / 20) % 4000;
+        return (deps.curTimeMillis() / 10) % 4000;
+    }
+
+    float getSpeedMph()
+    {
+        return (deps.curTimeMillis() / 1000) % 60;
     }
 };
