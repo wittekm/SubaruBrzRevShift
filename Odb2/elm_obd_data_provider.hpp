@@ -53,9 +53,9 @@ class ElmObdDataProvider : public IObdDataProvider {
          }
       }
 
-      float getSpeedMph()
+      float getSpeedKph()
       {
-         float temp = elm.mph();
+         float temp = elm.kph();
 
          if (elm.status == ELM_SUCCESS)
          {

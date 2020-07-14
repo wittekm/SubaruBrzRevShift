@@ -1,8 +1,8 @@
 #pragma once
-//#include <M5Stack.h>
 #include "interfaces/i_scene.hpp"
 #include "interfaces/i_obd_data_provider.hpp"
 #include "deps.hpp"
+#include "gear_find.hpp"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -80,17 +80,21 @@ public:
     void loop()
     {
         float rpm = dataProvider->getRpm();
-        float speed = dataProvider->getSpeedMph();
+        float speed = dataProvider->getSpeedKph();
 
+        deps.lcd.setCursor(0, 0);
         if (rpm != 0)
         {
             //deps.lcd.fillScreen(BLACK);
-            deps.lcd.setCursor(0, 0);
             deps.lcd.print("RPM: ");
             deps.lcd.println(rpm);
 
-            deps.lcd.print("MPH: ");
+            deps.lcd.print("KPH: ");
             deps.lcd.println(speed);
+
+            deps.lcd.setCursor(0, 240-40);
+            deps.lcd.print("GG: ");
+            deps.lcd.println(closestGearMatch(speed, rpm));
 
             drawAngleBRZ(deps, rpm);
         }
