@@ -17,7 +17,7 @@ static float GEAR_RATIOS[] = {
     0.767,
 };
 
-static float TIRE_RADIUS_CM = 62.738 / 2;
+static float TIRE_RADIUS_CM = 62.738 / 2.0;
 static float TIRE_CIRCUMFERENCE_M = 2.0 * PI * TIRE_RADIUS_CM / 1000.0;
 
 static float FINAL_RATIO = 4.10;
