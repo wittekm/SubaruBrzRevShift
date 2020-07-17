@@ -1,6 +1,6 @@
 #pragma once
 
-#include "interfaces/i_obd_data_provider.hpp"
+#include "../interfaces/i_obd_data_provider.hpp"
 
 #include "BluetoothSerial.h"
 #include "ELMduino.h"
@@ -21,6 +21,7 @@ class ElmObdDataProvider : public IObdDataProvider {
       {
          //DEBUG_PORT.begin(115200);
          ELM_PORT.begin("ESP32test", true);
+         deps.lcd.setCursor(0,0);
          deps.lcd.println("Attempting to connect to ELM327...");
 
          if (!ELM_PORT.connect("OBDII"))

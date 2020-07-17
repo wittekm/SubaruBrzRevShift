@@ -67,6 +67,8 @@
         "vector": "cpp",
         "*.tcc": "cpp",
         "cinttypes": "cpp",
-        "*.old": "cpp"
-    }
+        "*.old": "cpp",
+        "__memory": "cpp"
+    },
+    "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }

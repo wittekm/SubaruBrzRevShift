@@ -2,5 +2,8 @@
     "board": "esp32:esp32:m5stack-core-esp32",
     "configuration": "FlashMode=qio,FlashFreq=80,PartitionScheme=default,UploadSpeed=921600,DebugLevel=none",
     "port": "/dev/tty.usbserial-01DB6D88",
-    "sketch": "Odb2.ino"
+    "sketch": "Odb2.ino",
+    "buildPreferences": [
+
+    ]
 }

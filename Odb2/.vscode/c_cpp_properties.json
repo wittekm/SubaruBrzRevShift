@@ -6,7 +6,8 @@
                 "/Users/wimax/Documents/Arduino/libraries/ELMDuino/src",
                 "/Users/wimax/Documents/Arduino/libraries/M5Stack/src",
                 "/Users/wimax/Library/Arduino15/packages/esp32/tools/**",
-                "/Users/wimax/Library/Arduino15/packages/esp32/hardware/esp32/1.0.4/**"
+                "/Users/wimax/Library/Arduino15/packages/esp32/hardware/esp32/1.0.4/**",
+                "/Users/wimax/src/SubaruBrzRevShift/Odb2"
             ],
             "forcedInclude": [],
             "macFrameworkPath": [

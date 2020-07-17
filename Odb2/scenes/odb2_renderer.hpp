@@ -1,16 +1,17 @@
 #pragma once
-#include "interfaces/i_scene.hpp"
-#include "interfaces/i_obd_data_provider.hpp"
-#include "deps.hpp"
-#include "gear_find.hpp"
+#include "../interfaces/i_scene.hpp"
+#include "../interfaces/i_obd_data_provider.hpp"
+#include "../deps.hpp"
+#include "../logic/gear_find.hpp"
+#include "frame_preserver.hpp"
 
 #define PI 3.1415926535897932384626433832795
 
 #define DEG_TO_RAD 0.017453292519943295769236907684886
 
-static float RADIUS = 75;
-static int MID_X = 320 / 2 + 40;
-static int MID_Y = 240 / 2 + 40;
+static float RADIUS = 30;
+static int MID_X = 320 / 2 + 110;
+static int MID_Y = 240 / 2 - 25;
 
 // oh no, the 0 is at the bottom
 static float MIN_DEGS = (240.0);
@@ -64,11 +65,14 @@ private:
     IObdDataProvider *dataProvider;
     Deps &deps;
 
+    FramePreserver downshiftSuggestion;
+
 public:
     ODB2IrlScene(
         IObdDataProvider *dataProvider,
         Deps &deps) : dataProvider(dataProvider),
-                      deps(deps)
+                      deps(deps),
+                      downshiftSuggestion(5)
     {
     }
 
@@ -82,6 +86,8 @@ public:
         float rpm = dataProvider->getRpm();
         float speed = dataProvider->getSpeedKph();
 
+        deps.lcd.setTextSize(4);
+        deps.lcd.setTextColor(YELLOW, BLACK);
         deps.lcd.setCursor(0, 0);
         if (rpm != 0)
         {
@@ -92,15 +98,23 @@ public:
             deps.lcd.print("KPH: ");
             deps.lcd.println(speed);
 
-            deps.lcd.setCursor(0, 240-40);
-            deps.lcd.print("GG: ");
-            deps.lcd.println(closestGearMatch(speed, rpm));
+            int gearMatch = closestGearMatch(speed, rpm);
+            deps.lcd.print("G?: ");
+            deps.lcd.println(gearMatch);
+
+            int newDownshiftSuggestion = rpmAtGear(speed, gearMatch-1);
+            if(downshiftSuggestion.incrFrame(newDownshiftSuggestion)) {
+                deps.lcd.setTextSize(4);
+                deps.lcd.setTextColor(BRZ_ORANGE, BLACK);
+                deps.lcd.setCursor(0, 240 - 60);
+                deps.lcd.println(downshiftSuggestion.value);
+            }
 
             drawAngleBRZ(deps, rpm);
         }
         else
         {
-            deps.lcd.println("fail");
+            deps.lcd.println("rpm 0 wtf");
         }
     }
 };

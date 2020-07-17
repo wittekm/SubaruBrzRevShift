@@ -10,7 +10,12 @@ struct Deps {
         return millis();
     }
 
-    const void sleep(int millis) {
+    const void sleepMs(int millis) {
         delay(millis);
+    }
+
+    const void freshScreen() {
+        lcd.clear();
+        lcd.setCursor(0, 0);
     }
 };

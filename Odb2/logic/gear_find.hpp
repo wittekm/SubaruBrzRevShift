@@ -25,7 +25,16 @@ static float TIRE_RADIUS_M = TIRE_RADIUS_CM * CM_TO_M;
 static float TIRE_CIRCUMFERENCE_M = 2.0 * PI * TIRE_RADIUS_M;
 
 static float FINAL_RATIO = 4.10;
-static float MAGIC_CONSTANT = 336.13524;
+
+namespace Imperial {
+    // i cant believe im using imperial units dude
+    // might be 24.62
+    static float TIRE_DIAMETER_IN = 24.62; //24.7;
+    static float MAGIC_CONSTANT = 336.13524;
+
+    static float MPH_TO_KMH = 1.60934;
+    static float KMH_TO_MPH = 1.0/MPH_TO_KMH;
+}
 
 /*
 https://www.dropbox.com/s/o2ce1x7ddnhqueg/Screen%20Shot%202020-07-16%20at%203.18.34%20PM.png?dl=0
@@ -36,15 +45,23 @@ https://www.rcnmag.com/resources/images/RPMMPHGear-Ratio-1.jpg
 
 float rpmAtGear(float speed, int gear) {
     // mph * (gear * final) / circ = rpm
-    float expectedRpm = float(speed) * (GEAR_RATIOS[gear] * FINAL_RATIO) / TIRE_CIRCUMFERENCE_M;
-    return expectedRpm;
+    if(!gear) {
+        return -1;
+    }
 
-    float numer = (speed * )
+    float numerator = (speed 
+        * Imperial::KMH_TO_MPH 
+        * GEAR_RATIOS[gear] 
+        * FINAL_RATIO 
+        * Imperial::MAGIC_CONSTANT);
+    float denominator = Imperial::TIRE_DIAMETER_IN;
+    return numerator / denominator;
 }
 
 float speedAtGear(float rpm, int gear) {
-    float expected = rpm * TIRE_DIAMETER_M / (GEAR_RATIOS[gear] * FINAL_RATIO * MAGIC_CONSTANT);
-    return expected;
+    float numerator = (GEAR_RATIOS[gear] * FINAL_RATIO * Imperial::MAGIC_CONSTANT);
+    float denominator = Imperial::TIRE_DIAMETER_IN * rpm;
+    return denominator / numerator * Imperial::MPH_TO_KMH; // what is WRONG with me
 }
 
 float speedAtGearOG(float rpm, int gear) {
