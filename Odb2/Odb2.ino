@@ -1,11 +1,14 @@
 #define ESP32
 #include <ELMduino.h>
 #include <M5Stack.h>
+#include <experimental/optional>
 #include "deps.hpp"
 #include "faces.hpp"
 #include "scenes/odb2_renderer.hpp"
 #include "obd_data_providers/test_obd_data_provider.hpp"
 #include "obd_data_providers/elm_obd_data_provider.hpp"
+
+using namespace std::experimental;
 
 struct State
 {
@@ -115,14 +118,23 @@ void handleKbEvent(const Event event, State &state)
     deps.freshScreen();
     break;
 
-  case 'i': // irl
-    deps.lcd.println("IRL");
-    try {
-      state.dataProvider = new ElmObdDataProvider(deps);
-    } catch (std::bad_alloc exc) {
-      deps.lcd.println("Couldn't build ElmObdDataProvider");
+  case 'i':
+  { // irl
+    deps.freshScreen();
+    deps.text("IRL");
+
+    optional<ElmObdDataProvider *> provider = ElmObdDataProvider::get(deps);
+    if (provider)
+    {
+      state.dataProvider = *provider;
     }
-    break;
+    else
+    {
+      deps.text("Couldn't build ElmObdDataProvider", 2, RED);
+      deps.sleepMs();
+    }
+  }
+  break;
 
   default:
     break;
@@ -146,8 +158,8 @@ void handleButtonEvent(const Event event, State &state)
   if (event.payload == 'a')
   {
     deps.freshScreen();
-    deps.lcd.println("ok buhbye");
-    delay(1000);
+    deps.text("ok buhbye", 5, RED);
+    deps.sleepMs();
     M5.powerOFF();
   }
 
