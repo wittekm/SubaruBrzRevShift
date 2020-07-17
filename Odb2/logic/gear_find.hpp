@@ -43,10 +43,10 @@ https://www.rcnmag.com/resources/images/RPMMPHGear-Ratio-1.jpg
 336 magic constant
 */
 
-float rpmAtGear(float speed, int gear) {
+optional<int> rpmAtGear(float speed, int gear) {
     // mph * (gear * final) / circ = rpm
-    if(!gear) {
-        return -1;
+    if(gear > 1) {
+        return nullopt;
     }
 
     float numerator = (speed 
@@ -55,13 +55,13 @@ float rpmAtGear(float speed, int gear) {
         * FINAL_RATIO 
         * Imperial::MAGIC_CONSTANT);
     float denominator = Imperial::TIRE_DIAMETER_IN;
-    return numerator / denominator;
+    return optional<int>(numerator / denominator);
 }
 
 float speedAtGear(float rpm, int gear) {
-    float numerator = (GEAR_RATIOS[gear] * FINAL_RATIO * Imperial::MAGIC_CONSTANT);
-    float denominator = Imperial::TIRE_DIAMETER_IN * rpm;
-    return denominator / numerator * Imperial::MPH_TO_KMH; // what is WRONG with me
+    float numer = Imperial::TIRE_DIAMETER_IN * rpm;
+    float denom = (GEAR_RATIOS[gear] * FINAL_RATIO * Imperial::MAGIC_CONSTANT);
+    return numer / denom * Imperial::MPH_TO_KMH; // what is WRONG with me
 }
 
 float speedAtGearOG(float rpm, int gear) {

@@ -2,6 +2,8 @@
 #include "../deps.hpp"
 #include "../interfaces/i_obd_data_provider.hpp"
 
+using namespace std::experimental;
+
 class TestObdDataProvider : public IObdDataProvider
 {
 private:
@@ -9,12 +11,12 @@ private:
 
 public:
 TestObdDataProvider(Deps &deps) : deps(deps) {}
-    int getRpm()
+    optional<int> getRpm()
     {
         return (deps.curTimeMillis() / 100 * 10) % 900 * 10;
     }
 
-    float getSpeedKph()
+    optional<float> getSpeedKph()
     {
         return (deps.curTimeMillis() / 100 ) % 120;
     }

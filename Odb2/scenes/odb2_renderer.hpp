@@ -83,34 +83,43 @@ public:
 
     void loop()
     {
-        float rpm = dataProvider->getRpm();
-        float speed = dataProvider->getSpeedKph();
+        optional<int> rpm = dataProvider->getRpm();
+        optional<float> speed = dataProvider->getSpeedKph();
 
         deps.lcd.setTextSize(4);
         deps.lcd.setTextColor(YELLOW, BLACK);
         deps.lcd.setCursor(0, 0);
-        if (rpm != 0)
+        if (rpm && speed)
         {
             //deps.lcd.fillScreen(BLACK);
             deps.lcd.print("RPM: ");
-            deps.lcd.println(rpm);
+            deps.lcd.println(rpm.value_or(-1));
 
             deps.lcd.print("KPH: ");
-            deps.lcd.println(speed);
+            deps.lcd.println(speed.value_or(-1));
 
-            int gearMatch = closestGearMatch(speed, rpm);
-            deps.lcd.print("G?: ");
-            deps.lcd.println(gearMatch);
-
-            int newDownshiftSuggestion = rpmAtGear(speed, gearMatch-1);
-            if(downshiftSuggestion.incrFrame(newDownshiftSuggestion)) {
-                deps.lcd.setTextSize(4);
-                deps.lcd.setTextColor(BRZ_ORANGE, BLACK);
-                deps.lcd.setCursor(0, 240 - 60);
-                deps.lcd.println(downshiftSuggestion.value);
+            int gearMatch = 0;
+            if(rpm && speed) {
+                gearMatch = closestGearMatch(*speed, *rpm);
+                deps.lcd.print("G?: ");
+                deps.lcd.println(gearMatch);
             }
 
-            drawAngleBRZ(deps, rpm);
+            deps.lcd.setCursor(0, 240 - 60);
+            optional<int> newDownshiftSuggestion = rpmAtGear(*speed, gearMatch-1);
+            if(newDownshiftSuggestion) {
+                if (downshiftSuggestion.incrFrame(*newDownshiftSuggestion))
+                {
+                    String s = String(downshiftSuggestion.value);
+                    String asdf = String(s + "    ");
+                    deps.text(
+                        asdf.c_str(),
+                        4, BRZ_ORANGE);
+                    drawAngleBRZ(deps, *rpm);
+                }
+            else {
+                deps.text("---            ");
+            }
         }
         else
         {

@@ -19,7 +19,13 @@ struct Deps {
         lcd.setCursor(0, 0);
     }
 
-    const void text(char* input, int size=4, int color=YELLOW) {
+    const void text(const char* input, int size=4, int color=YELLOW) {
+        lcd.setTextSize(size);
+        lcd.setTextColor(color, BLACK);
+        lcd.println(input);
+    }
+
+    const void text(int input, int size=4, int color=YELLOW) {
         lcd.setTextSize(size);
         lcd.setTextColor(color, BLACK);
         lcd.println(input);

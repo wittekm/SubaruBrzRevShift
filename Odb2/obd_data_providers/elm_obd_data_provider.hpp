@@ -8,7 +8,6 @@
 
 #include <experimental/optional>
 using namespace std::experimental;
-std::experimental::optional<int> derp;
 
 #define DEBUG_PORT Serial
 #define ELM_PORT   SerialBT
@@ -55,33 +54,15 @@ class ElmObdDataProvider : public IObdDataProvider {
          }
       }
 
-      int getRpm()
+      optional<int> getRpm()
       {
-         int tempRpm = elm.rpm();
-
-         if (elm.status == ELM_SUCCESS)
-         {
-            return tempRpm;
-         }
-         else
-         {
-            // TODO: exception or golang style
-            return 0;
-         }
+         int value = elm.rpm();
+         return elm.status == ELM_SUCCESS ? optional<int>(value) : nullopt;
       }
 
-      float getSpeedKph()
+      optional<float> getSpeedKph()
       {
-         float temp = elm.kph();
-
-         if (elm.status == ELM_SUCCESS)
-         {
-            return temp;
-         }
-         else
-         {
-            // TODO: exception or golang style
-            return 0.0;
-         }
+         float value = elm.kph();
+         return elm.status == ELM_SUCCESS ? optional<float>(value) : nullopt;
       }
 };
