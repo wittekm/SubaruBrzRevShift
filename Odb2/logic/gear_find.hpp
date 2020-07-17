@@ -1,10 +1,13 @@
 #pragma once
+#include <experimental/optional>
 #define PI 3.1415926535897932384626433832795
 #if ARDUINO >= 100
   #include "Arduino.h"
 #else
   #include <math.h>
 #endif
+
+using namespace std::experimental;
 
 // subaru brz
 static float GEAR_RATIOS[] = {
@@ -45,7 +48,7 @@ https://www.rcnmag.com/resources/images/RPMMPHGear-Ratio-1.jpg
 
 optional<int> rpmAtGear(float speed, int gear) {
     // mph * (gear * final) / circ = rpm
-    if(gear > 1) {
+    if(gear < 1) {
         return nullopt;
     }
 

@@ -2,8 +2,6 @@
 #include "../deps.hpp"
 #include "../interfaces/i_obd_data_provider.hpp"
 
-using namespace std::experimental;
-
 class TestObdDataProvider : public IObdDataProvider
 {
 private:

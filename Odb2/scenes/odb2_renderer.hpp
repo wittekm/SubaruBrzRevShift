@@ -9,8 +9,8 @@
 
 #define DEG_TO_RAD 0.017453292519943295769236907684886
 
-static float RADIUS = 30;
-static int MID_X = 320 / 2 + 110;
+static float RADIUS = 50;
+static int MID_X = 320 / 2 + 100;
 static int MID_Y = 240 / 2 - 25;
 
 // oh no, the 0 is at the bottom
@@ -45,18 +45,25 @@ drawAngleBRZ(Deps &deps, int rpm)
     deps.lcd.fillRect(MID_X - RADIUS, MID_Y - RADIUS, RADIUS * 2, RADIUS * 2, BLACK);
 
     deps.lcd.fillCircle(
-        MID_X, MID_Y, 5, BRZ_ORANGE
-    );
+        MID_X, MID_Y, 5, BRZ_ORANGE);
 
     deps.lcd.drawCircle(
-        MID_X, MID_Y, RADIUS, BRZ_ORANGE
-    );
+        MID_X, MID_Y, RADIUS, BRZ_ORANGE);
 
-    deps.lcd.drawLine(
-        MID_X, MID_Y,
-        MID_X + sin(angleRads) * RADIUS,
-        MID_Y + cos(angleRads) * RADIUS,
-        BRZ_ORANGE);
+    auto draw = [&](float angleDegs, int color)
+    {
+        float angleRads = toRads(angleDegs);
+        // draw the bottom and the top
+        deps.lcd.drawLine(
+            MID_X, MID_Y,
+            MID_X + sin(angleRads) * RADIUS,
+            MID_Y + cos(angleRads) * RADIUS,
+            color);
+    };
+
+    draw(MIN_DEGS, YELLOW);
+    draw(MAX_DEGS, YELLOW);
+    draw(angleDegs, BRZ_ORANGE);
 }
 
 class ODB2IrlScene : public IScene
@@ -99,31 +106,35 @@ public:
             deps.lcd.println(speed.value_or(-1));
 
             int gearMatch = 0;
-            if(rpm && speed) {
+            if (rpm && speed)
+            {
                 gearMatch = closestGearMatch(*speed, *rpm);
                 deps.lcd.print("G?: ");
                 deps.lcd.println(gearMatch);
             }
 
             deps.lcd.setCursor(0, 240 - 60);
-            optional<int> newDownshiftSuggestion = rpmAtGear(*speed, gearMatch-1);
-            if(newDownshiftSuggestion) {
+            optional<int> newDownshiftSuggestion = rpmAtGear(*speed, gearMatch - 1);
+            if (newDownshiftSuggestion)
+            {
                 if (downshiftSuggestion.incrFrame(*newDownshiftSuggestion))
                 {
                     String s = String(downshiftSuggestion.value);
                     String asdf = String(s + "    ");
                     deps.text(
                         asdf.c_str(),
-                        4, BRZ_ORANGE);
+                        6, BRZ_ORANGE);
                     drawAngleBRZ(deps, *rpm);
                 }
-            else {
-                deps.text("---            ");
+                else
+                {
+                    deps.text("---            ", 6);
+                }
             }
-        }
-        else
-        {
-            deps.lcd.println("rpm 0 wtf");
+            else
+            {
+                deps.lcd.println("rpm 0 wtf");
+            }
         }
     }
 };
