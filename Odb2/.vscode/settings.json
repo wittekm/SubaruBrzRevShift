@@ -70,7 +70,8 @@
         "*.old": "cpp",
         "__memory": "cpp",
         "__functional_03": "cpp",
-        "memory_resource": "cpp"
+        "memory_resource": "cpp",
+        "optional": "cpp"
     },
     "C_Cpp.intelliSenseEngineFallback": "Enabled"
 }

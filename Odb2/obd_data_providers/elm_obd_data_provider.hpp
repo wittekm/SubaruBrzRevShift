@@ -23,7 +23,7 @@ class ElmObdDataProvider : public IObdDataProvider {
 
       ElmObdDataProvider(Deps& deps): deps(deps)
       {
-         //DEBUG_PORT.begin(115200);
+         DEBUG_PORT.begin(115200);
          ELM_PORT.begin("ESP32test", true);
          deps.lcd.setCursor(0,0);
          deps.lcd.println("Attempting to connect to ELM327...");
@@ -57,12 +57,16 @@ class ElmObdDataProvider : public IObdDataProvider {
       optional<int> getRpm()
       {
          int value = elm.rpm();
+         DEBUG_PORT.println(value);
+         DEBUG_PORT.print("Status is ");
+         DEBUG_PORT.println(elm.status);
          return elm.status == ELM_SUCCESS ? optional<int>(value) : nullopt;
       }
 
       optional<float> getSpeedKph()
       {
          float value = elm.kph();
+         //DEBUG_PORT.println(value);
          return elm.status == ELM_SUCCESS ? optional<float>(value) : nullopt;
       }
 };

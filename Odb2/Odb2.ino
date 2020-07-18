@@ -44,8 +44,10 @@ void setup()
   M5.Lcd.setTextColor(YELLOW, BLACK);
 
   // LCD display
-  deps.lcd.println("A for off\nB for OBD\nC for OBD setup");
-  deps.lcd.println("T for test\nI for IRL");
+  deps.text("BTN: A->off, C->setup", 2);
+  //deps.lcd.println("A for off\nB for OBD\nC for OBD setup");
+  deps.text("KB: T->test, I->irl\nM->manual", 2);
+  //deps.lcd.println("T for test\nI for IRL");
   kbSetup();
   state.dataProvider = new TestObdDataProvider(deps);
 }
@@ -112,6 +114,13 @@ void handleKbEvent(const Event event, State &state)
   case 't': // test
     deps.lcd.println("Test");
     state.dataProvider = new TestObdDataProvider(deps);
+    setScene(state, NULL);
+    break;
+
+  case 'm': // manual
+    deps.lcd.println("Manual");
+    state.dataProvider = new ManualObdDataProvider(deps);
+    setScene(state, NULL);
     break;
 
   case 'c': // clear
@@ -139,6 +148,10 @@ void handleKbEvent(const Event event, State &state)
   default:
     break;
   }
+
+  if(state.dataProvider) {
+    state.dataProvider->handleKbEvent(event);
+  }
 }
 
 void setScene(State &state, IScene *scene)
@@ -150,7 +163,9 @@ void setScene(State &state, IScene *scene)
     state.currScene = NULL;
   }
   state.currScene = scene;
-  state.currScene->setup();
+  if(state.currScene) {
+    state.currScene->setup();
+  }
 }
 
 void handleButtonEvent(const Event event, State &state)

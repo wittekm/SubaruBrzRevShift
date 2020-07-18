@@ -106,12 +106,10 @@ public:
             deps.lcd.println(speed.value_or(-1));
 
             int gearMatch = 0;
-            if (rpm && speed)
-            {
-                gearMatch = closestGearMatch(*speed, *rpm);
-                deps.lcd.print("G?: ");
-                deps.lcd.println(gearMatch);
-            }
+
+            gearMatch = closestGearMatch(*speed, *rpm);
+            deps.lcd.print("G?: ");
+            deps.lcd.println(gearMatch);
 
             deps.lcd.setCursor(0, 240 - 60);
             optional<int> newDownshiftSuggestion = rpmAtGear(*speed, gearMatch - 1);
@@ -135,6 +133,9 @@ public:
             {
                 deps.lcd.println("rpm 0 wtf");
             }
+        }
+        else {
+            deps.lcd.println("wtf");
         }
     }
 };
